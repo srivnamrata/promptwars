@@ -3,10 +3,10 @@
 // Safe Practice: The API key is now securely kept on the SERVER. 
 // It will NOT be bundled or exposed to the client browser, preventing credential leakage.
 
-export async function generateItinerary(prompt: string, apiKey: string) {
+export async function generateItinerary(prompt: string) {
   try {
-    const keyToUse = apiKey || process.env.GEMINI_API_KEY;
-    if (!keyToUse) throw new Error("API Key is missing. Please enter a valid Gemini API Key.");
+    const keyToUse = process.env.GEMINI_API_KEY;
+    if (!keyToUse) throw new Error("Server API Key is missing. Please configure GEMINI_API_KEY in Cloud Run.");
 
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${keyToUse}`, {
       method: "POST",
