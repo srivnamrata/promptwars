@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Hide Google Maps Billing/API Key Error Popup for Hackathon Demo */
+.gm-err-container {
+  display: none !important;
+}
+.gm-err-content {
+  display: none !important;
+}
+.gm-err-title {
+  display: none !important;
+}
+.dismissButton {
+  display: none !important;
+}
