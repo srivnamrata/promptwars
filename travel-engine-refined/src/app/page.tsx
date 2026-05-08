@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Navigation, Sparkles, AlertTriangle, Loader2 } from 'lucide-react';
@@ -17,6 +17,18 @@ export default function Home() {
   const [disruption, setDisruption] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [map, setMap] = useState<any>(null);
+
+  // Load saved API key from browser storage on load
+  useEffect(() => {
+    const savedKey = localStorage.getItem("gemini_api_key");
+    if (savedKey) setApiKey(savedKey);
+  }, []);
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const key = e.target.value;
+    setApiKey(key);
+    localStorage.setItem("gemini_api_key", key);
+  };
 
   const { itinerary, logs, loading, generateTrip, simulateDisruption } = useGemini();
 
@@ -63,7 +75,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="apiKey-input" className="text-xs text-emerald-400 uppercase font-bold tracking-widest mb-1.5 block">Gemini API Key</label>
-                  <input id="apiKey-input" type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
+                  <input id="apiKey-input" type="password" value={apiKey} onChange={handleApiKeyChange}
                     placeholder="Paste your Gemini API Key here..."
                     aria-label="API Key Input"
                     className="w-full bg-slate-950 border border-emerald-500/50 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
