@@ -44,11 +44,12 @@ export function useGemini() {
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Plan generation complete."]);
       
-      // Save to Firebase Firestore to maximize Google Cloud usage
+      // Save to Firebase Firestore to maximize Google Cloud usage (fire-and-forget so it doesn't hang)
       try {
-        await addDoc(collection(db, "trips"), { destination, budget, vibe, itinerary: data.itinerary, timestamp: new Date() });
+        addDoc(collection(db, "trips"), { destination, budget, vibe, itinerary: data.itinerary, timestamp: new Date() })
+          .catch(err => console.error("Firebase log error:", err));
       } catch (err) {
-        console.error("Firebase log error:", err);
+        console.error("Firebase sync error:", err);
       }
 
       // Auto-fit the map to the new coordinates
@@ -98,11 +99,12 @@ export function useGemini() {
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Itinerary successfully adapted."]);
       
-      // Save disruption plan to Firebase Firestore
+      // Save disruption plan to Firebase Firestore (fire-and-forget)
       try {
-        await addDoc(collection(db, "disruptions"), { disruption, itinerary: data.itinerary, timestamp: new Date() });
+        addDoc(collection(db, "disruptions"), { disruption, itinerary: data.itinerary, timestamp: new Date() })
+          .catch(err => console.error("Firebase log error:", err));
       } catch (err) {
-        console.error("Firebase log error:", err);
+        console.error("Firebase sync error:", err);
       }
 
       if (mapInstance && data.itinerary.length > 0 && window.google) {
