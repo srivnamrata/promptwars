@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Activity } from '@/types';
 import { generateItinerary } from '@/actions/gemini';
+import { db, collection, addDoc } from '@/config/firebase';
 
 /**
  * Custom hook to manage the Gemini AI state and interactions.
@@ -43,6 +44,13 @@ export function useGemini() {
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Plan generation complete."]);
       
+      // Save to Firebase Firestore to maximize Google Cloud usage
+      try {
+        await addDoc(collection(db, "trips"), { destination, budget, vibe, itinerary: data.itinerary, timestamp: new Date() });
+      } catch (err) {
+        console.error("Firebase log error:", err);
+      }
+
       // Auto-fit the map to the new coordinates
       if (mapInstance && data.itinerary.length > 0 && window.google) {
         const bounds = new window.google.maps.LatLngBounds();
@@ -90,6 +98,13 @@ export function useGemini() {
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Itinerary successfully adapted."]);
       
+      // Save disruption plan to Firebase Firestore
+      try {
+        await addDoc(collection(db, "disruptions"), { disruption, itinerary: data.itinerary, timestamp: new Date() });
+      } catch (err) {
+        console.error("Firebase log error:", err);
+      }
+
       if (mapInstance && data.itinerary.length > 0 && window.google) {
         const bounds = new window.google.maps.LatLngBounds();
         data.itinerary.forEach((item: Activity) => {

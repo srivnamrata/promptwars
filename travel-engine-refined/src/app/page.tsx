@@ -17,7 +17,6 @@ export default function Home() {
   const [disruption, setDisruption] = useState("");
   const [map, setMap] = useState<any>(null);
 
-  // Clean encapsulation of AI logic
   const { itinerary, logs, loading, generateTrip, simulateDisruption } = useGemini();
 
   const { isLoaded, loadError } = useJsApiLoader({
@@ -31,14 +30,14 @@ export default function Home() {
   const pathCoords = itinerary.map(item => ({ lat: item.lat, lng: item.lng }));
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30 p-4 md:p-8 flex flex-col">
+    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30 p-4 md:p-8 flex flex-col">
       <div className="max-w-[1400px] w-full mx-auto h-[90vh] flex flex-col">
         
         {/* === Header Section === */}
         <header className="flex justify-between items-center mb-8 shrink-0">
           <div>
             <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-              <Sparkles className="text-indigo-400 w-8 h-8" />
+              <Sparkles className="text-indigo-400 w-8 h-8" aria-hidden="true" />
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
                 GeoSmart Travel Engine
               </span>
@@ -47,66 +46,74 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
+        <section className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0" aria-label="Main Application Area">
           
           {/* === LEFT COLUMN: Controls & Timeline === */}
           <div className="lg:col-span-5 flex flex-col gap-6 overflow-hidden">
             
             {/* 1. Input Form Component */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/60 rounded-3xl p-6 shadow-2xl shrink-0">
+            <article className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/60 rounded-3xl p-6 shadow-2xl shrink-0" aria-labelledby="form-heading">
+              <h2 id="form-heading" className="sr-only">Travel Preferences Form</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Destination</label>
-                    <input type="text" value={destination} onChange={e => setDestination(e.target.value)}
+                    <label htmlFor="destination-input" className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Destination</label>
+                    <input id="destination-input" type="text" value={destination} onChange={e => setDestination(e.target.value)}
+                      aria-label="Destination Input"
                       className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Budget</label>
-                    <input type="text" value={budget} onChange={e => setBudget(e.target.value)}
+                    <label htmlFor="budget-input" className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Budget</label>
+                    <input id="budget-input" type="text" value={budget} onChange={e => setBudget(e.target.value)}
+                      aria-label="Budget Input"
                       className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Vibe & Preferences</label>
-                  <input type="text" value={vibe} onChange={e => setVibe(e.target.value)}
+                  <label htmlFor="vibe-input" className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Vibe & Preferences</label>
+                  <input id="vibe-input" type="text" value={vibe} onChange={e => setVibe(e.target.value)}
+                    aria-label="Vibe and Preferences Input"
                     className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
                 </div>
                 <button 
                   onClick={() => generateTrip(destination, budget, vibe, map)} 
                   disabled={loading}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] transition-all flex justify-center items-center gap-2"
+                  aria-label="Generate Itinerary"
+                  aria-busy={loading}
+                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] transition-all flex justify-center items-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-950"
                 >
-                  {loading ? <><Loader2 className="animate-spin w-5 h-5" /> Optimizing Route...</> : <><Navigation className="w-5 h-5" /> Generate Geo-Itinerary</>}
+                  {loading ? <><Loader2 className="animate-spin w-5 h-5" aria-hidden="true" /> Optimizing Route...</> : <><Navigation className="w-5 h-5" aria-hidden="true" /> Generate Geo-Itinerary</>}
                 </button>
               </div>
-            </div>
+            </article>
 
             {/* 2. Timeline Component */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/60 rounded-3xl p-6 flex-1 overflow-hidden flex flex-col relative">
+            <article className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/60 rounded-3xl p-6 flex-1 overflow-hidden flex flex-col relative" aria-labelledby="timeline-heading">
               <div className="flex justify-between items-end mb-4 shrink-0">
-                <h2 className="text-lg font-bold">Dynamic Itinerary</h2>
+                <h2 id="timeline-heading" className="text-lg font-bold">Dynamic Itinerary</h2>
                 {itinerary.length > 0 && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2">
                     <input type="text" placeholder="e.g. Heavy Rain" value={disruption} onChange={e => setDisruption(e.target.value)}
+                      aria-label="Disruption Event Input"
                       className="bg-slate-950 border border-red-900/50 rounded-lg px-3 py-1.5 text-sm w-32 focus:ring-1 focus:ring-red-500 outline-none placeholder:text-red-900/40" />
                     <button 
                       onClick={() => simulateDisruption(disruption, map)} 
                       disabled={loading || !disruption}
-                      className="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      aria-label="Simulate Disruption"
+                      className="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 focus:ring-2 focus:ring-red-500"
                     >
-                      <AlertTriangle className="w-4 h-4" /> Disrupt
+                      <AlertTriangle className="w-4 h-4" aria-hidden="true" /> Disrupt
                     </button>
                   </motion.div>
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-slate-800">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-slate-800" aria-live="polite">
                 <AnimatePresence mode="popLayout">
                   {itinerary.length === 0 ? (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                       className="h-full flex flex-col items-center justify-center text-slate-500 italic space-y-4">
-                      <MapPin className="w-12 h-12 text-slate-800" />
+                      <MapPin className="w-12 h-12 text-slate-800" aria-hidden="true" />
                       <p>Awaiting destination parameters...</p>
                     </motion.div>
                   ) : (
@@ -129,16 +136,16 @@ export default function Home() {
                   )}
                 </AnimatePresence>
               </div>
-            </div>
+            </article>
           </div>
 
           {/* === RIGHT COLUMN: Visual Map & Logs === */}
           <div className="lg:col-span-7 flex flex-col gap-6 overflow-hidden">
             
             {/* 3. Google Map Component */}
-            <div className="bg-slate-900 border border-slate-800/60 rounded-3xl p-2 h-2/3 shadow-2xl relative overflow-hidden group">
+            <article className="bg-slate-900 border border-slate-800/60 rounded-3xl p-2 h-2/3 shadow-2xl relative overflow-hidden group" aria-label="Interactive Map">
               <div className="absolute top-6 left-6 z-10 bg-slate-950/80 backdrop-blur px-4 py-2 rounded-xl border border-slate-800 shadow-xl flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" aria-hidden="true" />
                 <span className="text-xs font-bold tracking-widest uppercase text-slate-300">Live Telemetry</span>
               </div>
               
@@ -154,19 +161,19 @@ export default function Home() {
                   )}
                 </GoogleMap>
               ) : (
-                <div className="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-slate-500 font-mono text-sm border border-slate-800/50">
+                <div className="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-slate-500 font-mono text-sm border border-slate-800/50" aria-live="polite">
                   {loadError ? "MAPS_API_KEY Missing (Developer Mode Active)" : "Initializing Google Maps Platform..."}
                 </div>
               )}
-            </div>
+            </article>
 
             {/* 4. Agent Console Component */}
-            <div className="bg-black/80 border border-slate-800/80 rounded-3xl p-5 flex-1 shadow-2xl font-mono text-xs overflow-hidden flex flex-col">
+            <aside className="bg-black/80 border border-slate-800/80 rounded-3xl p-5 flex-1 shadow-2xl font-mono text-xs overflow-hidden flex flex-col" aria-label="System Logs">
               <div className="text-slate-500 mb-3 border-b border-slate-800 pb-2 uppercase tracking-widest font-bold flex justify-between">
                 <span>System Logs</span>
                 <span>v2.0.0</span>
               </div>
-              <div className="flex-1 overflow-y-auto space-y-2 flex flex-col justify-end">
+              <div className="flex-1 overflow-y-auto space-y-2 flex flex-col justify-end" aria-live="polite" aria-atomic="false">
                 <AnimatePresence>
                   {logs.map((log, i) => (
                     <motion.div key={i + log} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
@@ -181,11 +188,11 @@ export default function Home() {
                   ))}
                 </AnimatePresence>
               </div>
-            </div>
+            </aside>
 
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
