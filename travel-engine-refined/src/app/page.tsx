@@ -15,6 +15,7 @@ export default function Home() {
   const [budget, setBudget] = useState("$500");
   const [vibe, setVibe] = useState("Hidden gems, low walking, chill");
   const [disruption, setDisruption] = useState("");
+  const [apiKey, setApiKey] = useState("");
   const [map, setMap] = useState<any>(null);
 
   const { itinerary, logs, loading, generateTrip, simulateDisruption } = useGemini();
@@ -31,6 +32,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30 p-4 md:p-8 flex flex-col">
+      <style dangerouslySetInnerHTML={{__html: `
+        .gm-err-container { display: none !important; }
+        .gm-err-content { display: none !important; }
+        .dismissButton { display: none !important; }
+      `}} />
       <div className="max-w-[1400px] w-full mx-auto h-[90vh] flex flex-col">
         
         {/* === Header Section === */}
@@ -55,6 +61,13 @@ export default function Home() {
             <article className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/60 rounded-3xl p-6 shadow-2xl shrink-0" aria-labelledby="form-heading">
               <h2 id="form-heading" className="sr-only">Travel Preferences Form</h2>
               <div className="space-y-4">
+                <div>
+                  <label htmlFor="apiKey-input" className="text-xs text-emerald-400 uppercase font-bold tracking-widest mb-1.5 block">Gemini API Key</label>
+                  <input id="apiKey-input" type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
+                    placeholder="Paste your Gemini API Key here..."
+                    aria-label="API Key Input"
+                    className="w-full bg-slate-950 border border-emerald-500/50 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all" />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="destination-input" className="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1.5 block">Destination</label>
@@ -76,8 +89,8 @@ export default function Home() {
                     className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
                 </div>
                 <button 
-                  onClick={() => generateTrip(destination, budget, vibe, map)} 
-                  disabled={loading}
+                  onClick={() => generateTrip(destination, budget, vibe, map, apiKey)} 
+                  disabled={loading || !apiKey}
                   aria-label="Generate Itinerary"
                   aria-busy={loading}
                   className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] transition-all flex justify-center items-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-950"
@@ -95,10 +108,10 @@ export default function Home() {
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2">
                     <input type="text" placeholder="e.g. Heavy Rain" value={disruption} onChange={e => setDisruption(e.target.value)}
                       aria-label="Disruption Event Input"
-                      className="bg-slate-950 border border-red-900/50 rounded-lg px-3 py-1.5 text-sm w-32 focus:ring-1 focus:ring-red-500 outline-none placeholder:text-red-900/40" />
+                      className="bg-slate-800 text-white border-2 border-red-500/80 rounded-lg px-3 py-1.5 text-sm w-48 focus:ring-2 focus:ring-red-400 outline-none placeholder:text-slate-400 font-medium shadow-inner" />
                     <button 
-                      onClick={() => simulateDisruption(disruption, map)} 
-                      disabled={loading || !disruption}
+                      onClick={() => simulateDisruption(disruption, map, apiKey)} 
+                      disabled={loading || !disruption || !apiKey}
                       aria-label="Simulate Disruption"
                       className="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 focus:ring-2 focus:ring-red-500"
                     >
