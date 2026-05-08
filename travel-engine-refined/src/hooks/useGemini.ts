@@ -1,35 +1,14 @@
 import { useState } from 'react';
 import { Activity } from '@/types';
-
-// Use the API key directly on the client for the hackathon MVP to bypass local Windows SWC/Node bugs
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "AIzaSyBeUS2vE8LrawkwRe90uszGYUaKe0dVqZY";
+import { generateItinerary } from '@/actions/gemini';
 
 /**
  * Custom hook to manage the Gemini AI state and interactions.
- * Abstracts away the fetch logic and data parsing.
  */
 export function useGemini() {
   const [itinerary, setItinerary] = useState<Activity[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-
-  /**
-   * Internal helper to call the Gemini REST API.
-   */
-  const callGemini = async (prompt: string) => {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json" }
-      })
-    });
-    
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Failed to generate");
-    return JSON.parse(data.candidates[0].content.parts[0].text);
-  };
 
   /**
    * Generates a brand new intelligent itinerary based on user preferences.
@@ -54,7 +33,13 @@ export function useGemini() {
       }
       `;
       
-      const data = await callGemini(prompt);
+      const response = await generateItinerary(prompt);
+      
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      const data = response.data;
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Plan generation complete."]);
       
@@ -95,7 +80,13 @@ export function useGemini() {
       }
       `;
       
-      const data = await callGemini(prompt);
+      const response = await generateItinerary(prompt);
+      
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      const data = response.data;
       setItinerary(data.itinerary);
       setLogs(prev => [...prev, ...data.logs, "✅ System: Itinerary successfully adapted."]);
       
