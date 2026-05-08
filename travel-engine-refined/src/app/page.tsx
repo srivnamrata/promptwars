@@ -15,7 +15,7 @@ export default function Home() {
   const [budget, setBudget] = useState("$500");
   const [vibe, setVibe] = useState("Hidden gems, low walking, chill");
   const [disruption, setDisruption] = useState("");
-  const [map, setMap] = useState<any>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const { itinerary, logs, loading, generateTrip, simulateDisruption } = useGemini();
 
@@ -24,7 +24,7 @@ export default function Home() {
     googleMapsApiKey: MAPS_API_KEY,
   });
 
-  const onLoad = useCallback((mapInstance: any) => setMap(mapInstance), []);
+  const onLoad = useCallback((mapInstance: google.maps.Map) => setMap(mapInstance), []);
   const onUnmount = useCallback(() => setMap(null), []);
 
   const pathCoords = itinerary.map(item => ({ lat: item.lat, lng: item.lng }));

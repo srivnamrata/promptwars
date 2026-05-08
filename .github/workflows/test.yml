@@ -1,0 +1,33 @@
+name: Automated Validation Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './travel-engine-refined/package-lock.json'
+
+      - name: Install Dependencies
+        working-directory: ./travel-engine-refined
+        run: npm ci
+
+      - name: Run Automated Tests
+        working-directory: ./travel-engine-refined
+        run: npm run test
+
+      - name: Run Code Quality Linter
+        working-directory: ./travel-engine-refined
+        run: npm run lint

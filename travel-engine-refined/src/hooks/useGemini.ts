@@ -14,7 +14,7 @@ export function useGemini() {
   /**
    * Generates a brand new intelligent itinerary based on user preferences.
    */
-  const generateTrip = async (destination: string, budget: string, vibe: string, mapInstance: any) => {
+  const generateTrip = async (destination: string, budget: string, vibe: string, mapInstance: google.maps.Map | null) => {
     setLoading(true);
     setLogs(["System: Initializing Google AI Planner...", "System: Generating coordinate matrices..."]);
     
@@ -69,7 +69,7 @@ export function useGemini() {
   /**
    * Dynamically replans the trip when a disruption occurs.
    */
-  const simulateDisruption = async (disruption: string, mapInstance: any) => {
+  const simulateDisruption = async (disruption: string, mapInstance: google.maps.Map | null) => {
     if (!disruption) return;
     setLoading(true);
     setLogs(prev => [...prev, `🚨 DISRUPTION: ${disruption}`, "System: Activating Dynamic Replanning..."]);
